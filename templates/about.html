@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}关于我 - RupySo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-4 text-center mb-4 mb-lg-0">
+            <img src="https://ui-avatars.com/api/?name=RupySo&size=250&background=0D6EFD&color=fff"
+                 class="img-fluid rounded-circle shadow-lg" alt="RupySo's Avatar" style="width: 250px;">
+        </div>
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-3">你好，我是 <span class="text-primary">慕雨</span></h1>
+            <p class="lead mb-4">
+                一名热衷于技术探索的学习者，喜欢构建有意思的数字产品。
+            </p>
+            <p class="text-muted">
+                我热爱编程，享受将想法转化为代码的过程。对我而言，写代码不仅仅是工作或学习，更是一种表达创意的方式。
+                目前，我正专注于 Web 开发和人工智能，并在这个不断变化的数字世界里持续探索新的边界。
+            </p>
+            <div class="d-flex gap-2">
+                <span class="badge bg-light text-dark border p-2 px-3">📍 现居：地球</span>
+                <span class="badge bg-light text-dark border p-2 px-3">📧 邮箱：2237100113@qq.com</span>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5 opacity-25">
+
+    <div class="row g-5">
+        <div class="col-md-6">
+            <h3 class="fw-bold mb-4">技术储备</h3>
+
+            {% for item in tech_stack %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-medium">{{ item.name }}</span>
+                    <span class="text-muted small">{{ item.percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 8px; background-color: #e9ecef;">
+                    <div class="progress-bar {% cycle 'bg-primary' 'bg-success' 'bg-warning' 'bg-info' 'bg-danger' %}"
+                         role="progressbar"
+                         style="width: {{ item.percentage }}%">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <h3 class="fw-bold mb-4">除了敲代码...</h3>
+            <ul class="list-unstyled">
+                <li class="mb-3">
+                    <h5>📚 阅读与思考</h5>
+                    <p class="text-muted small">保持阅读习惯，涉猎技术、哲学等领域。</p>
+                </li>
+                <li class="mb-3">
+                    <h5>🎮 探索未知</h5>
+                    <p class="text-muted small">对一切新鲜事物保持好奇心，从新游戏到新技术。</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-5 p-5 bg-white border-top border-bottom text-center">
+        <blockquote class="blockquote mb-0">
+            <p class="fs-3 fw-light text-secondary fst-italic mb-3">
+                “ 保持愚蠢，保持平静，保持好奇，保持本心 ”
+            </p>
+        </blockquote>
+    </div>
+</div>
+{% endblock %}

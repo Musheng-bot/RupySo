@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RupySo{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 1. 基础布局：确保页脚始终在页面底部 */
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #fcfcfc;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+        main {
+            flex: 1 0 auto; /* 核心：让中间内容区域自动伸缩，将页脚推向底部 */
+        }
+
+        /* 2. 导航栏样式 */
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* 3. 深色页脚核心样式 */
+        footer {
+            background-color: #1a1a1a;
+            color: #888;
+            padding: 3rem 0; /* 增加上下内边距，更有呼吸感 */
+            flex-shrink: 0;   /* 确保页脚不会被压缩 */
+        }
+
+        /* 4. 页脚链接与交互 */
+        .social-icon {
+            color: #6c757d;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-icon:hover {
+            color: #ffffff;
+            transform: translateY(-3px); /* 悬停微动 */
+        }
+
+        .hover-link {
+            color: #888;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        /* 5. 辅助类：分割线透明度 */
+        .border-secondary {
+            border-color: rgba(108, 117, 125, 0.2) !important;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">RupySo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/">首页</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">关于</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">项目</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">博客</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="mt-auto py-5" style="background-color: #1a1a1a;">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4 text-center text-lg-start">
+                <h4 class="text-white fw-bold mb-3">RupySo</h4>
+                <p class="text-secondary small" style="max-width: 250px;">
+                    记录生活，记录世界。
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <h6 class="text-white-50 text-uppercase mb-3" style="letter-spacing: 1px;">联系我</h6>
+                <span class="text-white text-decoration-none fs-5 hover-link">
+                    2237100113@qq.com
+                </span>
+            </div>
+
+            <div class="col-lg-4 text-center text-lg-end">
+                <h6 class="text-white-50 text-uppercase mb-3" style="letter-spacing: 1px;">Follow Me</h6>
+                <div class="d-flex justify-content-center justify-content-lg-end gap-3">
+                    <a href="#" class="social-icon"><i class="bi bi-github">Github: Musheng-bot</i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-wechat"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-sina-weibo"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-5 mt-5 border-top border-secondary" style="--bs-border-opacity: .2;">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <span class="text-secondary small">&copy; 2026 RupySo. All Rights Reserved.</span>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <span class="text-secondary small">Built with <span class="text-danger">♥</span> and Django.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
