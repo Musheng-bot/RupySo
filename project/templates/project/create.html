@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}发布新项目 - RupySo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* 容器与卡片样式 */
+    .admin-card {
+        border-radius: 16px;
+        border: none;
+        background: #ffffff;
+    }
+
+    /* 标签样式：小写、灰色、间距感 */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 0.6rem;
+    }
+
+    /* 输入框：移除所有默认占位符感，保持纯白 */
+    .form-control {
+        border: 1px solid #eee;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #000;
+        box-shadow: none;
+        background-color: #fff;
+    }
+
+    /* 日期选择器专用样式 */
+    .datepicker {
+        background-color: #fff !important;
+        cursor: pointer;
+    }
+
+    /* 上传区域：虚线边框暗示 */
+    .upload-section {
+        border: 2px dashed #f0f0f0;
+        background-color: #fafafa;
+        border-radius: 12px;
+        padding: 2rem;
+        transition: border-color 0.3s;
+    }
+
+    .upload-section:hover {
+        border-color: #ccc;
+    }
+
+    /* 隐藏所有可能的浏览器原生占位符 */
+    ::placeholder { color: transparent !important; }
+
+    .btn-publish {
+        padding: 0.8rem 3rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card admin-card shadow-sm">
+                <div class="card-body p-lg-5">
+                    <div class="text-center mb-5">
+                        <h2 class="fw-bold text-dark">NEW PROJECT</h2>
+                        <p class="text-muted small">填写下方信息以发布您的最新成果</p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" id="projectForm">
+                        {% csrf_token %}
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-7">
+                                <label class="form-label">{{ form.name.label }}</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">{{ form.slug.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">/</span>
+                                    {{ form.slug }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.short_description.label }}</label>
+                            {{ form.short_description }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Markdown 内容导入</label>
+                            <div class="upload-section text-center">
+                                <i class="bi bi-cloud-upload fs-1 text-light mb-3 d-block"></i>
+                                {{ form.content_file }}
+                                <div class="mt-2 small text-muted">选择您的 .md 项目文档</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.start_date.label }}</label>
+                                {{ form.start_date }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.end_date.label }}</label>
+                                {{ form.end_date }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Github Repository</label>
+                                {{ form.source_code_url }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Live Demo URL</label>
+                                {{ form.project_url }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4 mt-5">
+                            <div class="form-check form-switch">
+                                {{ form.is_finished }}
+                                <label class="form-check-label ms-2 small text-secondary" for="{{ form.is_finished.id_for_label }}">已结项</label>
+                            </div>
+                            <button type="submit" class="btn btn-dark btn-publish">PUBLISH</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // 初始化日期选择器
+    flatpickr(".datepicker", {
+        dateFormat: "Y-m-d", // 强制数据库标准格式
+        disableMobile: "true", // 在移动端也保持插件样式，避免唤起原生 UI
+        allowInput: false,     // 必须点击选择，防止手动输入乱格式
+    });
+
+    // 为 Slug 提供一个简单的自动生成建议（可选）
+    document.querySelector('input[name="name"]').addEventListener('blur', function() {
+        const slugInput = document.querySelector('input[name="slug"]');
+        if (!slugInput.value) {
+            slugInput.value = this.value.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+    });
+</script>
+{% endblock %}

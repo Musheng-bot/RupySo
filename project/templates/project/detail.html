@@ -26,7 +26,7 @@
         border-bottom: 2px solid #eee;
     }
     .info-card {
-        position: sticky;
+        position: static;
         top: 100px;
     }
 </style>
@@ -45,18 +45,6 @@
                 </nav>
                 <h1 class="display-4 fw-bold text-dark mb-3">{{ project.name }}</h1>
                 <p class="lead text-secondary">{{ project.short_description }}</p>
-                <div class="d-flex gap-2 mt-4">
-                    {% if project.is_finished %}
-                        <span class="badge bg-success px-3 py-2">已完成</span>
-                    {% else %}
-                        <span class="badge bg-warning text-dark px-3 py-2">开发中</span>
-                    {% endif %}
-                    <span class="text-muted ms-2 mt-1">
-                        <i class="bi bi-calendar3"></i> 
-                        {{ project.start_date|date:"Y.m.d" }} -
-                        {% if project.end_date %}{{ project.end_date|date:"Y.m.d" }}{% else %}至今{% endif %}
-                    </span>
-                </div>
             </div>
         </div>
     </div>
@@ -75,7 +63,7 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm info-card">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">项目资源</h5>
+                    <h5 class="fw-bold mb-4">项目信息</h5>
                     
                     <div class="d-grid gap-3">
                         {% if project.project_url %}
@@ -99,9 +87,15 @@
                             <span>创建日期:</span>
                             <span class="text-dark">{{ project.start_date }}</span>
                         </li>
+                        {% if project.end_date %}
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span>结束日期:</span>
+                            <span class="text-dark">{{ project.end_date }}</span>
+                        </li>
+                        {% endif %}
                         <li class="mb-2 d-flex justify-content-between">
                             <span>项目状态:</span>
-                            <span class="text-dark">{% if project.is_finished %}已结项{% else %}维护中{% endif %}</span>
+                            <span class="text-dark">{% if project.is_finished %}已完成{% else %}开发中{% endif %}</span>
                         </li>
                     </ul>
                 </div>
