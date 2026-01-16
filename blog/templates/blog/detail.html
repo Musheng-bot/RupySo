@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load md_filter %} {# 确保加载了包含 markdown 过滤器的标签库 #}
+{% load md_filter %}
 
 {% block title %}{{ post.title }} - RupySo{% endblock %}
 
@@ -74,6 +74,20 @@
         margin-top: 0.5rem;
         text-align: center;
     }
+    /* 极致简约的交互效果 */
+    .hover-dark {
+        transition: color 0.2s ease;
+    }
+    .hover-dark:hover {
+        color: #1a1a1a !important;
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    /* 甚至可以把顶部的 border-top 调淡一点 */
+    footer.mt-5 {
+        border-top: 1px solid #f1f1f1 !important;
+    }
 </style>
 {% endblock %}
 
@@ -104,7 +118,6 @@
 
         {% if post.images.exists %}
         <section class="image-gallery">
-            <h5 class="fw-bold mb-4 text-secondary"><i class="bi bi-images me-2"></i>图片附件 ({{ post.images.count }})</h5>
             <div class="gallery-grid">
                 {% for img in post.images.all %}
                 <div class="gallery-wrapper">
@@ -123,15 +136,32 @@
         </section>
         {% endif %}
 
-        <footer class="mt-5 pt-5 border-top d-flex justify-content-between">
-            <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
-                <i class="bi bi-arrow-left me-1"></i> 返回列表
+        <div class="mt-5 pt-5 border-top-0 d-flex justify-content-between align-items-center">
+            <a href="{% url 'blog:list' %}" class="text-secondary text-decoration-none small hover-dark">
+                <i class="bi bi-chevron-left"></i> 返回博文列表
             </a>
-            <div class="social-share">
-                <span class="small text-muted me-2">分享到:</span>
-                <i class="bi bi-link-45deg fs-5 cursor-pointer" title="复制链接"></i>
+
+            <div class="d-flex gap-3 align-items-center">
+                <i class="bi bi-link-45deg text-muted fs-5 cursor-pointer hover-dark"
+                   title="Copy Link"
+                   onclick="copyToClipboard()">复制链接</i>
+
+{#                {% if user.is_staff %}#}
+{#                <a href="{% url 'blog:post_update' post.id %}" class="text-muted text-decoration-none small hover-dark">#}
+{#                    EDIT#}
+{#                </a>#}
+{#                {% endif %}#}
             </div>
-        </footer>
+        </div>
     </article>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyToClipboard() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('链接已复制');
+    }
+</script>
 {% endblock %}

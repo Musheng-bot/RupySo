@@ -1,35 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}发布博文 - RupySo{% endblock %}
+{% block title %}{% if form.instance.pk %}编辑{% else %}发布{% endif %}博文 - RupySo{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* 简约表单样式 */
-    .form-section {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        padding: 2.5rem;
-    }
-    .image-form-row {
-        background: #f8f9fa;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        transition: all 0.2s;
-    }
-    .form-label {
-        font-weight: 600;
-        color: #444;
-        font-size: 0.9rem;
-    }
-    /* 隐藏 Django 默认的 Checkbox 样式并美化 */
-    .delete-checkbox {
-        display: flex;
-        align-items: center;
-        color: #dc3545;
-        font-size: 0.85rem;
-        cursor: pointer;
-    }
+    .form-section { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 2.5rem; }
+    .image-form-row { background: #f8f9fa; border: 1px solid #eee; border-radius: 8px; transition: all 0.2s; }
+    .form-label { font-weight: 600; color: #444; font-size: 0.9rem; }
+    .delete-checkbox { color: #dc3545; font-size: 0.85rem; cursor: pointer; }
+    /* 图片预览小方块 */
+    .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+    .empty-preview { width: 60px; height: 60px; border: 1px dashed #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #fff; color: #ccc; font-size: 1.2rem; }
 </style>
 {% endblock %}
 
@@ -38,7 +19,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="form-section">
-                <h3 class="fw-bold mb-4 text-center">发布新博文</h3>
+                <h3 class="fw-bold mb-4 text-center">{% if form.instance.pk %}编辑博文{% else %}发布新博文{% endif %}</h3>
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -69,18 +50,28 @@
                         {% for image_form in images %}
                         <div class="image-form-row p-3 mb-3">
                             <div class="row g-3 align-items-center">
-                                <div class="col-md-5">
+                                <div class="col-auto">
+                                    {% if image_form.instance.image %}
+                                        <img src="{{ image_form.instance.image.url }}" class="img-preview-sm">
+                                    {% else %}
+                                        <div class="empty-preview"><i class="bi bi-image"></i></div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col">
                                     <label class="small text-muted mb-1 d-block">选择图片</label>
                                     {{ image_form.image }}
                                 </div>
-                                <div class="col-md-5">
-                                    <label class="small text-muted mb-1 d-block">图片说明 (可选)</label>
+
+                                <div class="col-md-4">
+                                    <label class="small text-muted mb-1 d-block">图片说明</label>
                                     {{ image_form.caption }}
                                 </div>
-                                <div class="col-md-2 text-end">
-                                    {% if images.can_delete %}
+
+                                <div class="col-auto">
+                                    {% if image_form.instance.pk %}
                                         <div class="delete-checkbox mt-3">
-                                            {{ image_form.DELETE }} <span class="ms-1">删除</span>
+                                            {{ image_form.DELETE }} <span class="ms-1 text-danger">删除</span>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -97,7 +88,10 @@
                             {{ form.published }}
                             <label class="form-check-label ms-2" for="{{ form.published.id_for_label }}">立即发布</label>
                         </div>
-                        <button type="submit" class="btn btn-dark px-5 py-2 fw-bold">保存博文</button>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'blog:list' %}" class="btn btn-light px-4">取消</a>
+                            <button type="submit" class="btn btn-dark px-5 fw-bold">保存并提交</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -109,26 +103,37 @@
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.querySelector('#image-form-container');
         const addButton = document.querySelector('#add-image-btn');
-        const totalForms = document.querySelector('#id_images-TOTAL_FORMS'); // 注意：这里的 images 是 related_name
+        const totalForms = document.querySelector('#id_images-TOTAL_FORMS');
         const maxForms = 9;
 
         addButton.addEventListener('click', function() {
-            const currentFormCount = container.querySelectorAll('.image-form-row').length;
+            const forms = container.querySelectorAll('.image-form-row');
+            const currentFormCount = forms.length;
 
             if (currentFormCount < maxForms) {
-                // 复制第一个表单行作为模板
-                const newForm = container.querySelectorAll('.image-form-row')[0].cloneNode(true);
+                // 始终克隆第一个作为模板
+                const newForm = forms[0].cloneNode(true);
 
-                // 清空新表单里的值
+                // 1. 重置所有输入值
                 const inputs = newForm.querySelectorAll('input');
                 inputs.forEach(input => {
                     input.value = '';
-                    // 关键：更新 name 和 id 中的索引
                     if (input.name) {
-                        input.name = input.name.replace('-0-', `-${currentFormCount}-`);
-                        input.id = input.id.replace('-0-', `-${currentFormCount}-`);
+                        // 更新索引，例如 images-0-image 变 images-1-image
+                        input.name = input.name.replace(/-\d+-/g, `-${currentFormCount}-`);
+                        input.id = input.id.replace(/-\d+-/g, `-${currentFormCount}-`);
                     }
+                    // 新行不需要勾选删除
+                    if (input.type === 'checkbox') input.checked = false;
                 });
+
+                // 2. 关键：移除克隆出来的旧图片预览，替换为占位符
+                const previewZone = newForm.querySelector('.col-auto');
+                previewZone.innerHTML = '<div class="empty-preview"><i class="bi bi-image"></i></div>';
+
+                // 3. 移除旧行的“删除”勾选列（新行未保存不需要删除勾选）
+                const deleteCol = newForm.querySelector('.col-auto:last-child');
+                if (deleteCol && deleteCol !== previewZone) deleteCol.innerHTML = '';
 
                 container.appendChild(newForm);
                 totalForms.value = currentFormCount + 1;

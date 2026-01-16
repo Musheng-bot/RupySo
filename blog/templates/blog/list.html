@@ -1,67 +1,96 @@
 {% extends "base.html" %}
+{% load md_filter %}
 
 {% block title %}博客 - RupySo{% endblock %}
 
 {% block extra_css %}
 <style>
+    /* 页面背景与卡片容器 */
     .post-card {
         background: #fff;
         border: 1px solid #f0f0f0;
         border-radius: 12px;
         transition: transform 0.2s, box-shadow 0.2s;
         overflow: hidden;
+        border-left: 4px solid transparent; /* 装饰性左边框 */
     }
     .post-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border-left: 4px solid #1a1a1a;
     }
+
     .post-link {
         text-decoration: none;
         color: inherit;
     }
-    /* 图片预览网格 */
-    .image-grid {
-        display: grid;
-        gap: 4px;
-        margin-top: 1rem;
-    }
-    /* 根据图片数量动态调整栅格 */
-    .grid-1 { grid-template-columns: 1fr; max-width: 400px; }
-    .grid-2 { grid-template-columns: 1fr 1fr; }
-    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .grid-more { grid-template-columns: repeat(3, 1fr); }
 
-    .grid-item {
-        aspect-ratio: 1 / 1;
-        object-fit: cover;
-        border-radius: 4px;
-        background-color: #f8f9fa;
+    /* 标题与元数据 */
+    .post-title {
+        font-weight: 700;
+        line-height: 1.4;
+        transition: color 0.2s;
+    }
+    .post-card:hover .post-title {
+        color: #000;
     }
     .post-meta {
         font-size: 0.85rem;
         color: #999;
+        letter-spacing: 0.5px;
     }
+
+    /* 内容摘要：限制 3 行 */
     .post-content-preview {
-        color: #555;
+        color: #666;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        line-height: 1.6;
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    /* 图片预览网格 - 仅最多显示 3 张 */
+    .image-grid {
+        display: grid;
+        gap: 8px;
+        margin-top: 0.5rem;
+    }
+    .grid-1 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .grid-item {
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #eee;
+    }
+
+    /* 底部操作区按钮 */
+    .btn-read-more {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        transition: transform 0.2s;
+    }
+    .btn-read-more:hover {
+        transform: translateX(4px);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-5 pb-3 border-bottom">
         <div>
-            <h2 class="fw-bold mb-0">BLOGS</h2>
-            <p class="text-muted small mb-0">共有 {{ posts.count }} 篇记录</p>
+            <h2 class="fw-bold mb-1" style="letter-spacing: -1px;">博客</h2>
+            <p class="text-muted small mb-0">记录想法与生活，共有 {{ posts.count }} 篇</p>
         </div>
         {% if user.is_staff %}
-        <a href="{% url 'blog:create' %}" class="btn btn-dark btn-sm px-3">
-            <i class="bi bi-pencil-square"></i> 写博客
+        <a href="{% url 'blog:create' %}" class="btn btn-dark btn-sm px-4 rounded-pill fw-bold">
+            <i class="bi bi-plus-lg me-1"></i> 新博文
         </a>
         {% endif %}
     </div>
@@ -69,60 +98,74 @@
     <div class="row g-4">
         {% for post in posts %}
         <div class="col-12">
-            <div class="post-card p-4">
-                <div class="row">
+            <article class="post-card p-4">
+                <div class="row align-items-start">
                     <div class="{% if post.images.exists %}col-md-7{% else %}col-12{% endif %}">
-                        <div class="post-meta mb-2">
-                            {{ post.created_at|date:"Y年m月d日" }}
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="post-meta">{{ post.created_at|date:"Y.m.d" }}</span>
+
+                            {% if user.is_staff and not post.published %}
+                            <span class="badge bg-light text-dark border small fw-normal px-2 py-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-file-earmark-text me-1"></i>DRAFT
+                            </span>
+                            {% endif %}
                         </div>
+
                         <a href="{% url 'blog:detail' post.id %}" class="post-link">
-                            <h4 class="fw-bold mb-3">{{ post.title }}</h4>
+                            <h4 class="post-title mb-3">{{ post.title }}</h4>
                         </a>
-                        <p class="post-content-preview">
-                            {{ post.content|striptags|truncatechars:150 }}
-                        </p>
+
+                        <div class="post-content-preview mb-3">
+                            {{ post.content|markdown|striptags|truncatechars:120 }}
+                        </div>
                     </div>
 
                     {% if post.images.exists %}
                     <div class="col-md-5 mt-3 mt-md-0">
-                        {% with img_count=post.images.count %}
-                        <div class="image-grid 
+                        {% with images=post.images.all|slice:":3" img_count=post.images.count %}
+                        <div class="image-grid
                             {% if img_count == 1 %}grid-1
                             {% elif img_count == 2 %}grid-2
-                            {% elif img_count == 3 %}grid-3
-                            {% else %}grid-more{% endif %}">
-                            
-                            {% for img in post.images.all|slice:":9" %}
-                            <img src="{{ img.image.url }}" class="grid-item w-100" alt="预览图">
+                            {% else %}grid-3{% endif %}">
+
+                            {% for img in images %}
+                            <img src="{{ img.image.url }}" class="grid-item w-100" alt="Preview">
                             {% endfor %}
                         </div>
-                        {% if img_count > 9 %}
-                        <div class="text-end text-muted small mt-1">+ 更多图片</div>
+
+                        {% if img_count > 3 %}
+                        <div class="text-end text-muted mt-2" style="font-size: 0.75rem;">
+                            + {{ img_count|add:"-3" }} more photos
+                        </div>
                         {% endif %}
                         {% endwith %}
                     </div>
                     {% endif %}
                 </div>
-                
-                <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
-                    <a href="{% url 'blog:detail' post.id %}" class="btn btn-link btn-sm p-0 text-dark fw-bold text-decoration-none">
-                        阅读全文 <i class="bi bi-arrow-right"></i>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a href="{% url 'blog:detail' post.id %}" class="btn-read-more text-dark fw-bold text-decoration-none">
+                        阅读全文 <i class="bi bi-arrow-right ms-1"></i>
                     </a>
-                    {% if not post.published %}
-                    <span class="badge bg-warning text-dark">草稿</span>
+
+                    {% if user.is_staff %}
+                    <a href="{% url 'blog:update' post.id %}" class="btn btn-dark btn-sm px-3 py-1 rounded-pill fw-bold shadow-sm">
+                        <i class="bi bi-pencil-square me-1"></i> 编辑
+                    </a>
                     {% endif %}
                 </div>
-            </div>
+            </article>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <p class="text-muted">还没有发布过博文哦...</p>
+            <div class="text-muted mb-3"><i class="bi bi-inbox fs-1"></i></div>
+            <p class="text-muted">暂无内容，请稍后再来。</p>
         </div>
         {% endfor %}
     </div>
 
     {% if is_paginated %}
-    <nav class="mt-5">
+    <nav class="mt-5 pt-4">
         <ul class="pagination justify-content-center">
             </ul>
     </nav>

@@ -18,3 +18,7 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy("project:detail", kwargs={"slug": self.slug})
+
+    class Meta:
+        verbose_name = '项目'
+        verbose_name_plural = verbose_name
