@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load md_filter %} {# 确保加载了包含 markdown 过滤器的标签库 #}
+
+{% block title %}{{ post.title }} - RupySo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+    /* 文章容器：控制最大宽度，提升阅读舒适度 */
+    .article-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 3rem;
+        border-radius: 16px;
+    }
+    
+    .article-header {
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .article-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+        color: #1a1a1a;
+        line-height: 1.3;
+    }
+
+    /* Markdown 内容样式微调 */
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+    .article-content h2, .article-content h3 {
+        margin-top: 2rem;
+        font-weight: 700;
+    }
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    /* 图片画廊样式 */
+    .image-gallery {
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f8f9fa;
+    }
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    .gallery-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: zoom-in;
+    }
+    .gallery-img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .gallery-item:hover .gallery-img {
+        transform: scale(1.05);
+    }
+    .gallery-caption {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <article class="article-container shadow-sm">
+        <header class="article-header">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{% url 'blog:list' %}" class="text-decoration-none text-muted">博客列表</a></li>
+                    <li class="breadcrumb-item active text-dark">正文</li>
+                </ol>
+            </nav>
+            <h1 class="article-title mb-3">{{ post.title }}</h1>
+            <div class="d-flex align-items-center text-muted small">
+                <span class="me-3"><i class="bi bi-calendar3 me-1"></i> {{ post.created_at|date:"Y-m-d" }}</span>
+{#                {% if user.is_staff %}#}
+{#                <a href="{% url 'blog:post_update' post.id %}" class="text-decoration-none text-primary">#}
+{#                    <i class="bi bi-pencil-square me-1"></i>编辑#}
+{#                </a>#}
+{#                {% endif %}#}
+            </div>
+        </header>
+
+        <div class="article-content">
+            {{ post.content|markdown }}
+        </div>
+
+        {% if post.images.exists %}
+        <section class="image-gallery">
+            <h5 class="fw-bold mb-4 text-secondary"><i class="bi bi-images me-2"></i>图片附件 ({{ post.images.count }})</h5>
+            <div class="gallery-grid">
+                {% for img in post.images.all %}
+                <div class="gallery-wrapper">
+                    <div class="gallery-item shadow-sm">
+                        {# 使用 a 标签方便以后集成图片灯箱 (Lightbox) #}
+                        <a href="{{ img.image.url }}" target="_blank">
+                            <img src="{{ img.image.url }}" class="gallery-img" alt="{{ img.caption }}">
+                        </a>
+                    </div>
+                    {% if img.caption %}
+                    <p class="gallery-caption small">{{ img.caption }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <footer class="mt-5 pt-5 border-top d-flex justify-content-between">
+            <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                <i class="bi bi-arrow-left me-1"></i> 返回列表
+            </a>
+            <div class="social-share">
+                <span class="small text-muted me-2">分享到:</span>
+                <i class="bi bi-link-45deg fs-5 cursor-pointer" title="复制链接"></i>
+            </div>
+        </footer>
+    </article>
+</div>
+{% endblock %}

@@ -34,4 +34,5 @@ urlpatterns = [
     path('', index, name='index'),
     path('about/', about, name='about'),
     path('project/', include('project.urls', namespace='project')),
+    path('blog/', include('blog.urls', namespace='blog')),
 ]
