@@ -4,12 +4,23 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-5 pb-3 border-bottom">
         <div>
-            <h1 class="display-5 fw-bold mb-0">项目展示</h1>
-            <p class="text-muted mt-2">在这里记录我从零到一构建的作品。</p>
+            <h1 class="display-5 fw-bold mb-0" style="letter-spacing: -1.5px;">个人项目合集</h1>
+            <p class="text-muted mt-2 mb-0">在这里记录我从零到一构建的作品。</p>
         </div>
-        <span class="badge bg-primary px-3 py-2">{{ project_list|length }} Projects</span>
+
+        <div class="d-flex align-items-center gap-3">
+            {% if user.is_staff %}
+            <a href="{% url 'project:create' %}" class="btn btn-dark btn-sm px-4 rounded-pill fw-bold shadow-sm">
+                <i class="bi bi-plus-lg me-1"></i> 新项目
+            </a>
+            {% endif %}
+
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-normal">
+                {{ project_list|length }} Projects
+            </span>
+        </div>
     </div>
 
     <div class="row g-4">
@@ -20,9 +31,9 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h4 class="card-title fw-bold text-dark mb-0">{{ project.name }}</h4>
                         {% if project.is_finished %}
-                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">已完成</span>
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle small" style="font-size: 0.7rem;">已完成</span>
                         {% else %}
-                            <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle">开发中</span>
+                            <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle small" style="font-size: 0.7rem;">开发中</span>
                         {% endif %}
                     </div>
 
@@ -30,8 +41,8 @@
 
                     <div class="small text-muted mb-3">
                         <i class="bi bi-calendar3 me-1"></i>
-                        {{ project.start_date|date:"Y.m.d" }} -
-                        {% if project.end_date %}{{ project.end_date|date:"Y.m.d" }}{% else %}至今{% endif %}
+                        {{ project.start_date|date:"Y.m" }} —
+                        {% if project.end_date %}{{ project.end_date|date:"Y.m" }}{% else %}至今{% endif %}
                     </div>
 
                     <p class="card-text text-secondary mb-4 line-clamp-3">
@@ -46,8 +57,8 @@
                         {% endif %}
 
                         {% if project.project_url %}
-                        <a href="{{ project.project_url }}" target="_blank" class="btn btn-sm btn-primary flex-grow-1 position-relative" style="z-index: 2;">
-                            <i class="bi bi-link-45deg"></i> 演示
+                        <a href="{{ project.project_url }}" target="_blank" class="btn btn-sm btn-dark flex-grow-1 position-relative" style="z-index: 2;">
+                            <i class="bi bi-eye"></i> 演示
                         </a>
                         {% endif %}
                     </div>
@@ -63,20 +74,24 @@
 </div>
 
 <style>
-    /* 卡片悬停提升效果 */
+    /* 极致简约的交互效果 */
     .hover-shadow:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+        transform: translateY(-8px);
+        box-shadow: 0 1.5rem 3rem rgba(0,0,0,.08) !important;
     }
     .transition-all {
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
-    /* 限制描述文本行数，保持对齐 */
     .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;  
+        -webkit-box-orient: vertical;
         overflow: hidden;
+        font-size: 0.9rem;
+    }
+    /* 优化卡片边框 */
+    .card {
+        border: 1px solid #f0f0f0 !important;
     }
 </style>
 {% endblock %}
