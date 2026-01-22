@@ -10,3 +10,5 @@ class PostImageInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     inlines = [PostImageInline]
     list_display = ('title', 'created_at')
+
+admin.site.register(PostImage)

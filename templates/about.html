@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}关于我 - RupySo{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row align-items-center mb-5">
         <div class="col-lg-4 text-center mb-4 mb-lg-0">
-            <img src="https://ui-avatars.com/api/?name=RupySo&size=250&background=0D6EFD&color=fff"
+            <img src="{% static 'icon.jpg' %}"
                  class="img-fluid rounded-circle shadow-lg" alt="RupySo's Avatar" style="width: 250px;">
         </div>
         <div class="col-lg-8">
