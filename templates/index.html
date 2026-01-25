@@ -75,6 +75,18 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
+
+    .btn-start {
+        background: transparent;
+        color: rgba(129,124,121,0.7);
+        border: 1px solid rgba(129,124,121,0.4);
+        padding: 10px 30px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        letter-spacing: 2px;
+    }
+
 /* 星空容器基础样式 */
 /* 星空容器：底色调得更深邃 */
 .starry-night {
@@ -158,7 +170,7 @@
             <p class="text-white-50 mb-3" style="letter-spacing: 3px;">✨ 穿越星河，抵达彼岸 ✨</p>
             <h2 class="fw-bold mb-4 display-5" style="color: rgba(129,124,121,0.56);">RupySo 的无限宇宙</h2>
             <p class="mb-5 fs-5" style="color: rgba(129,124,121,0.56);">感谢你探索至此，这份奇遇专属于你。</p>
-            <a href="#" class="btn btn-outline-warning btn-lg rounded-pill px-5">启程！</a>
+            <a href="{% url 'secret:bonus' %}" class="btn-start btn">启程！</a>
         </div>
     </div>
 </div>
@@ -219,5 +231,6 @@ window.addEventListener('scroll', function() {
         }
     }
 });
+
 </script>
 {% endblock %}

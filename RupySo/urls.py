@@ -22,6 +22,7 @@ urlpatterns = [
     path('about/', about, name='about'),
     path('project/', include('project.urls', namespace='project')),
     path('blog/', include('blog.urls', namespace='blog')),
+    path('secret/', include('secret.urls', namespace='secret')),
 ]
 
 if settings.DEBUG:
