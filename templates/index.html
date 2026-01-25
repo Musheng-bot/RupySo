@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}首页 - RupySo{% endblock %}
 
 {% block content %}
@@ -75,5 +75,149 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
+/* 星空容器基础样式 */
+/* 星空容器：底色调得更深邃 */
+.starry-night {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    /* 从深青黑色过渡到纯黑 */
+    /* 初始背景：不再是纯黑，而是带一点点灰色的暗调，类似 #1a1a1a */
+    background-color: #1a1a1a !important;
+    background: radial-gradient(circle at center, #0d1a26 0%, #000 100%);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 3s ease; /* 增加到3秒，让出现更丝滑 */
+}
+
+.starry-night::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none; /* 确保不影响点击按钮 */
+}
+
+/* 装饰文字：也调得柔和一点 */
+.content-box h2 {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2); /* 淡淡的微光 */
+}
+
+/* 小星星：使用半透明白色，不再刺眼 */
+#stars {
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    /* 使用 rgba(255, 255, 255, 0.4) 代替纯白 */
+    box-shadow:
+        445px 152px rgba(255, 255, 255, 0.4),
+        142px 254px rgba(255, 255, 255, 0.3),
+        874px 654px rgba(255, 255, 255, 0.5),
+        245px 854px rgba(255, 255, 255, 0.3),
+        1254px 352px rgba(255, 255, 255, 0.4),
+        542px 754px rgba(255, 255, 255, 0.2),
+        421px 125px rgba(255, 255, 255, 0.4);
+    animation: stars-blink 4s infinite ease-in-out;
+}
+
+/* 中等星星：带一点点淡蓝色，更有层次感 */
+#stars2 {
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow:
+        245px 452px rgba(135, 206, 235, 0.3),
+        642px 154px rgba(255, 255, 255, 0.2),
+        974px 454px rgba(135, 206, 235, 0.4),
+        1154px 152px rgba(255, 255, 255, 0.3);
+    animation: stars-blink 6s infinite ease-in-out;
+}
+
+/* 呼吸动画：让透明度在 0.1 到 0.6 之间摆动，非常柔和 */
+@keyframes stars-blink {
+    0%, 100% { opacity: 0.2; transform: scale(0.9); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
 </style>
+{% endblock %}
+
+{% block easter_egg %}
+<div id="hidden-void" style="display: none; background-color: #000;">
+    <div style="height: 120vh; background: linear-gradient(to bottom, #1a1a1a 0%, #000 80%, #000 100%);"></div>
+    <div style="height: 20vh; background-color: #000;"></div>
+    <div id="easter-egg-section" class="starry-night">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+
+        <div class="container text-center content-box">
+            <p class="text-white-50 mb-3" style="letter-spacing: 3px;">✨ 穿越星河，抵达彼岸 ✨</p>
+            <h2 class="fw-bold mb-4 display-5" style="color: rgba(129,124,121,0.56);">RupySo 的无限宇宙</h2>
+            <p class="mb-5 fs-5" style="color: rgba(129,124,121,0.56);">感谢你探索至此，这份奇遇专属于你。</p>
+            <a href="#" class="btn btn-outline-warning btn-lg rounded-pill px-5">启程！</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let hasUnlocked = false;
+
+window.addEventListener('scroll', function() {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const clientHeight = window.innerHeight;
+
+    // --- 逻辑 1：判断是否滑动到底部（解锁隐藏区域） ---
+    // 当滚动条距离页面底部小于等于 5px，且未解锁时触发
+    if (!hasUnlocked && (scrollTop + clientHeight >= scrollHeight - 5)) {
+        hasUnlocked = true;
+
+        const hiddenVoid = document.getElementById('hidden-void');
+        if (hiddenVoid) {
+            hiddenVoid.style.display = 'block'; // 显示整个隐藏区域
+        }
+
+        if (navigator.vibrate) navigator.vibrate(50); // 可选：震动反馈
+        console.log("🌌 新空间已解锁！");
+    }
+
+    // --- 逻辑 2：判断是否回到顶部（重新锁定隐藏区域） ---
+    // 当滚动高度非常靠近顶部（小于等于 5px）时重置
+    if (hasUnlocked && scrollTop <= 5) {
+        hasUnlocked = false;
+
+        const hiddenVoid = document.getElementById('hidden-void');
+        if (hiddenVoid) {
+            hiddenVoid.style.display = 'none'; // 重新隐藏整个区域
+        }
+
+        // 重置星空彩蛋区域的透明度，以便下次解锁时重新渐变出现
+        const easterEggSection = document.getElementById('easter-egg-section');
+        if (easterEggSection) {
+            easterEggSection.style.opacity = '0';
+        }
+
+        console.log("🚀 已回到顶部，空间重新锁定。");
+    }
+
+    // --- 逻辑 3：处理星空彩蛋区域的渐变显现效果 ---
+    // 只有当 hidden-void 区域被解锁（hasUnlocked 为 true）时才处理
+    if (hasUnlocked) {
+        const easterEggSection = document.getElementById('easter-egg-section');
+        if (easterEggSection) {
+            const rect = easterEggSection.getBoundingClientRect();
+            // 当星空区域的顶部进入视口的下半部分（50%处）时开始渐变
+            if (rect.top < window.innerHeight * 0.7) {
+                easterEggSection.style.opacity = '1'; // 渐变出现
+            }
+        }
+    }
+});
+</script>
 {% endblock %}
