@@ -50,8 +50,35 @@
     }
     .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 15px;
+        margin-bottom: 2rem;
+    }
+
+    /* 1张图：单行全宽或半宽（根据你喜好，这里设为全宽） */
+    .grid-1 { grid-template-columns: 1fr; }
+
+    /* 2张图 & 4张图：两列排布 (4张会自动折行形成2*2) */
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    /* 3, 5, 6, 7, 8, 9张图：三列排布 */
+    /* 5张会自动形成第一排3张，第二排2张 */
+    /* 6张会自动形成2*3 */
+    /* 9张会自动形成3*3 */
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    /* 优化图片高度：让 4/3 比例在不同格子里都和谐 */
+    .gallery-img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        display: block;
+    }
+
+    /* 针对只有一张图时的特殊处理，防止图片过大 */
+    .grid-1 .gallery-img {
+        max-height: 500px;
+        aspect-ratio: auto; /* 单图保持原比例更好看 */
     }
     .gallery-item {
         position: relative;
@@ -88,6 +115,30 @@
     footer.mt-5 {
         border-top: 1px solid #f1f1f1 !important;
     }
+    #image-viewer {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.85); /* 半透明背景 */
+        cursor: zoom-out;
+        backdrop-filter: blur(5px); /* 增加磨砂效果，更高级 */
+        justify-content: center;
+        align-items: center;
+    }
+
+    #full-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        transition: transform 0.3s ease;
+    }
+
+    /* 阻止滚动 */
+    .no-scroll { overflow: hidden; }
 </style>
 {% endblock %}
 
@@ -118,14 +169,19 @@
 
         {% if post.images.exists %}
         <section class="image-gallery">
-            <div class="gallery-grid">
+            {# 根据图片数量动态赋予类名 #}
+            {% with img_count=post.images.count %}
+            <div class="gallery-grid
+                {% if img_count == 1 %}grid-1
+                {% elif img_count == 2 %}grid-2
+                {% elif img_count == 4 %}grid-2
+                {% elif img_count == 3 or img_count == 5 or img_count == 6 %}grid-3
+                {% else %}grid-3{% endif %}">
+
                 {% for img in post.images.all %}
                 <div class="gallery-wrapper">
-                    <div class="gallery-item shadow-sm">
-                        {# 使用 a 标签方便以后集成图片灯箱 (Lightbox) #}
-                        <a href="{{ img.image.url }}" target="_blank">
-                            <img src="{{ img.image.url }}" class="gallery-img" alt="{{ img.caption }}">
-                        </a>
+                    <div class="gallery-item shadow-sm" onclick="viewImage('{{ img.image.url }}')">
+                        <img src="{{ img.image.url }}" class="gallery-img" alt="{{ img.caption }}">
                     </div>
                     {% if img.caption %}
                     <p class="gallery-caption small">{{ img.caption }}</p>
@@ -133,6 +189,7 @@
                 </div>
                 {% endfor %}
             </div>
+            {% endwith %}
         </section>
         {% endif %}
 
@@ -154,11 +211,31 @@
             </div>
         </div>
     </article>
+<div id="image-viewer">
+    <img id="full-image" src="">
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    const viewer = document.getElementById('image-viewer');
+    const fullImg = document.getElementById('full-image');
+
+    // 打开图片
+    function viewImage(imgSrc) {
+        fullImg.src = imgSrc;
+        viewer.style.display = 'flex';
+        document.body.classList.add('no-scroll');
+    }
+
+    // 关闭查看器
+    viewer.onclick = function() {
+        viewer.style.display = 'none';
+        document.body.classList.remove('no-scroll');
+        fullImg.src = ""; // 清空图片，减少内存占用
+    };
+
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href);
         alert('链接已复制');
