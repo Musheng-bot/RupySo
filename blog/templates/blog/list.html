@@ -116,7 +116,7 @@
                         </a>
 
                         <div class="post-content-preview mb-3">
-                            {{ post.content|markdown|striptags|truncatechars:120 }}
+                            {{ post.content|safe|striptags|truncatechars:120 }}
                         </div>
                     </div>
 

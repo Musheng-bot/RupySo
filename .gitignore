@@ -1,9 +1,8 @@
 .idea
 .vscode
-migrations
 *.sqlite3
-media
+media/
 __pycache__
-.venv
-wheels
-staticfiles
+.venv/
+wheels/
+staticfiles/

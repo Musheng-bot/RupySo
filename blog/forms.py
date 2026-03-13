@@ -1,24 +1,21 @@
+# blog/forms.py
 from django import forms
-from blog.models import Post, PostImage
+from .models import Post
+from django_ckeditor_5.widgets import CKEditor5Widget
+
 
 class PostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["title"].widget.attrs.update({"class": "form-control"})
+        self.fields["published"].widget.attrs.update({"class": "form-check-input"})
+        
     class Meta:
         model = Post
-        fields = ['title', 'content', 'published']
+        fields = ("title", "content", "published")
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
+            # 这里的 "extends" 必须和你 settings.py 里的 CKEDITOR_5_CONFIGS 键名一致
+            "content": CKEditor5Widget(
+                attrs={"class": "django_ckeditor_5"}, config_name="extends"
+            )
         }
-
-# 创建一个内联表单集
-PostImageFormSet = forms.inlineformset_factory(
-    Post, PostImage,
-    fields=('image', 'caption'),
-    extra=1,       # 默认显示 1 个上传框
-    max_num=9,     # 严格限制最多 9 张
-    can_delete=True, # 允许在编辑时删除图片
-    widgets={
-        'image': forms.FileInput(attrs={'class': 'form-control'}),
-        'caption': forms.TextInput(attrs={'class': 'form-control'}),
-    }
-)

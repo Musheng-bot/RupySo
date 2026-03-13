@@ -1,4 +1,6 @@
+asgiref==3.11.1
 Django==5.2.8
+django-ckeditor-5==0.2.20
 gunicorn==24.1.1
 Markdown==3.10.1
 packaging==26.0

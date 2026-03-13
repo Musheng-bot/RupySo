@@ -5,12 +5,19 @@
 {% block extra_css %}
 <style>
     .form-section { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 2.5rem; }
-    .image-form-row { background: #f8f9fa; border: 1px solid #eee; border-radius: 8px; transition: all 0.2s; }
     .form-label { font-weight: 600; color: #444; font-size: 0.9rem; }
-    .delete-checkbox { color: #dc3545; font-size: 0.85rem; cursor: pointer; }
-    /* 图片预览小方块 */
-    .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
-    .empty-preview { width: 60px; height: 60px; border: 1px dashed #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #fff; color: #ccc; font-size: 1.2rem; }
+    
+    /* 让编辑器更像样 *//* 这里的类名是 CKEditor 5 渲染后的标准类名 */
+    .ck-editor__editable_inline {
+        min-height: 450px !important; /* 必须给个高度 */
+        border: 1px solid #ced4da !important;
+    }
+
+    /* 确保编辑器容器在页面中是块级显示 */
+    .ck.ck-editor {
+        display: block !important;
+        width: 100% !important;
+    }
 </style>
 {% endblock %}
 
@@ -23,6 +30,9 @@
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    
+                    {# 加载 CKEditor 5 资源 #}
+                    {{ form.media }}
 
                     <div class="mb-4">
                         <label class="form-label">文章标题</label>
@@ -31,56 +41,9 @@
                     </div>
 
                     <div class="mb-5">
-                        <label class="form-label">正文内容 (Markdown)</label>
+                        <label class="form-label">正文内容</label>
                         {{ form.content }}
                         {% if form.content.errors %}<div class="text-danger small">{{ form.content.errors }}</div>{% endif %}
-                    </div>
-
-                    <hr class="my-5">
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold mb-0">图片附件 <span class="text-muted fw-normal small">(最多 9 张)</span></h5>
-                        <button type="button" id="add-image-btn" class="btn btn-outline-dark btn-sm">
-                            <i class="bi bi-plus-lg"></i> 添加一张图片
-                        </button>
-                    </div>
-
-                    {{ images.management_form }}
-                    <div id="image-form-container">
-                        {% for image_form in images %}
-                        <div class="image-form-row p-3 mb-3">
-                            <div class="row g-3 align-items-center">
-                                <div class="col-auto">
-                                    {% if image_form.instance.image %}
-                                        <img src="{{ image_form.instance.image.url }}" class="img-preview-sm">
-                                    {% else %}
-                                        <div class="empty-preview"><i class="bi bi-image"></i></div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="col">
-                                    <label class="small text-muted mb-1 d-block">选择图片</label>
-                                    {{ image_form.image }}
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label class="small text-muted mb-1 d-block">图片说明</label>
-                                    {{ image_form.caption }}
-                                </div>
-
-                                <div class="col-auto">
-                                    {% if image_form.instance.pk %}
-                                        <div class="delete-checkbox mt-3">
-                                            {{ image_form.DELETE }} <span class="ms-1 text-danger">删除</span>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% for hidden in image_form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
                     </div>
 
                     <div class="mt-5 d-flex justify-content-between align-items-center">
@@ -98,49 +61,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const container = document.querySelector('#image-form-container');
-        const addButton = document.querySelector('#add-image-btn');
-        const totalForms = document.querySelector('#id_images-TOTAL_FORMS');
-        const maxForms = 9;
-
-        addButton.addEventListener('click', function() {
-            const forms = container.querySelectorAll('.image-form-row');
-            const currentFormCount = forms.length;
-
-            if (currentFormCount < maxForms) {
-                // 始终克隆第一个作为模板
-                const newForm = forms[0].cloneNode(true);
-
-                // 1. 重置所有输入值
-                const inputs = newForm.querySelectorAll('input');
-                inputs.forEach(input => {
-                    input.value = '';
-                    if (input.name) {
-                        // 更新索引，例如 images-0-image 变 images-1-image
-                        input.name = input.name.replace(/-\d+-/g, `-${currentFormCount}-`);
-                        input.id = input.id.replace(/-\d+-/g, `-${currentFormCount}-`);
-                    }
-                    // 新行不需要勾选删除
-                    if (input.type === 'checkbox') input.checked = false;
-                });
-
-                // 2. 关键：移除克隆出来的旧图片预览，替换为占位符
-                const previewZone = newForm.querySelector('.col-auto');
-                previewZone.innerHTML = '<div class="empty-preview"><i class="bi bi-image"></i></div>';
-
-                // 3. 移除旧行的“删除”勾选列（新行未保存不需要删除勾选）
-                const deleteCol = newForm.querySelector('.col-auto:last-child');
-                if (deleteCol && deleteCol !== previewZone) deleteCol.innerHTML = '';
-
-                container.appendChild(newForm);
-                totalForms.value = currentFormCount + 1;
-            } else {
-                alert('最多只能上传 9 张图片哦！');
-            }
-        });
-    });
-</script>
 {% endblock %}
