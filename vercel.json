@@ -1,10 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "RupySo/wsgi.py",
-      "use": "@vercel/python"
-    }
-  ],
   "routes": [
     {
       "src": "/static/(.*)",
