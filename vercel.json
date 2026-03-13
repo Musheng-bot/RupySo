@@ -1,0 +1,19 @@
+{
+  "builds": [
+    {
+      "src": "RupySo/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "static/$1",
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "RupySo/wsgi.py"
+    }
+  ]
+}
