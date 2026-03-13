@@ -1,6 +1,4 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db import transaction
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.views.generic import ListView
