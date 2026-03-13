@@ -122,6 +122,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # WhiteNoise 会从这里找文件
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # 用户上传的图片
 MEDIA_URL = '/media/'
