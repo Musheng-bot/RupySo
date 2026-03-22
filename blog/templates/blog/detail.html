@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load md_filter %}
+{% load static %}
+
 
 {% block title %}{{ post.title }} - RupySo{% endblock %}
 
@@ -219,5 +221,20 @@
     };
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    id="MathJax-script"
+    async
+    onerror="onMathJaxError()"
+>
+</script>
+
+<script>
+    function onMathJaxError() {
+        console.warn("CDN MathJax 加载失败，正在切换至本地资源...");
+        const script = document.createElement('script');
+        script.src = '{% static 'js/mathjax.js' %}';
+        document.head.appendChild(script);
+    }
+</script>
 {% endblock %}
