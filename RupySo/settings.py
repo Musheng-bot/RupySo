@@ -216,7 +216,13 @@ CKEDITOR_5_CONFIGS = {
                 "imageStyle:side",
                 "|",
             ],
-            "styles": ["full", "alignLeft", "alignRight", "alignCenter", "side"],
+            "styles": [
+                "full", 
+                "alignLeft", 
+                "alignRight", 
+                "alignCenter", 
+                "side"
+            ],
         },
     },
 }
