@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'blog',
     'project',
+    'about',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,8 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'templates',
             BASE_DIR / 'project' / 'templates',
+            BASE_DIR / 'blog' / 'templates',
+            BASE_DIR / 'about' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -109,15 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'zh-hans'
-
 TIME_ZONE = 'Asia/Shanghai'
-
 USE_I18N = True
-
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # WhiteNoise 会从这里找文件
@@ -226,6 +223,5 @@ CKEDITOR_5_CONFIGS = {
         },
     },
 }
-
 CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
