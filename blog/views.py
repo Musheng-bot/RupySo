@@ -34,7 +34,7 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/list.html'
     context_object_name = 'posts'
-    queryset = Post.objects.all()
+    queryset = Post.objects.filter(published=True).all()
 
 class PostDetailView(DetailView):
     model = Post

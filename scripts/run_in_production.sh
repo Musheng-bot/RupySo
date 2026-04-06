@@ -1,10 +1,14 @@
 #!/bin/bash
 
-export RUPYSO_MODE=debug
+export RUPYSO_MODE=release
 export RUPYSO_DATABASE=mysql
 
-/var/www/rupyso/.venv/bin/gunicorn \
+SCRIPT_PATH=$(readlink -f $0)
+WORKSPACE=$(dirname $(dirname $SCRIPT_PATH))
+
+
+$WORKSPACE/.venv/bin/gunicorn \
     --access-logfile - \
     --workers 3 \
     --bind 127.0.0.1:8000 \
-    Rupyso.wsgi:application
+    RupySo.wsgi:application

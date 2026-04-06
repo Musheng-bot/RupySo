@@ -1,6 +1,9 @@
 #!/bin/bash
 
-export RUPYSO_MODE=release
+export RUPYSO_MODE=debug
 export RUPYSO_DATABASE=sqlite3
 
-/home/musheng/code/Web/RupySo/.venv/bin/python /home/musheng/code/Web/RupySo/manage.py runserver
+SCRIPT_PATH=$(readlink -f $0)
+WORKSPACE=$(dirname $(dirname $SCRIPT_PATH))
+
+$WORKSPACE/.venv/bin/python $WORKSPACE/manage.py runserver
