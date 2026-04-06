@@ -5,7 +5,7 @@ export RUPYSO_DATABASE=mysql
 
 SCRIPT_PATH=$(readlink -f $0)
 WORKSPACE=$(dirname $(dirname $SCRIPT_PATH))
-
+source $WORKSPACE/.venv/bin/activate
 
 $WORKSPACE/.venv/bin/gunicorn \
     --access-logfile - \
