@@ -1,196 +1,190 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load md_filter %}
 {% load static %}
 
-
-{% block title %}{{ post.title }} - RupySo{% endblock %}
+{% block title %}
+  {{ post.title }} - RupySo
+{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <style>
     /* 文章容器：控制最大宽度，提升阅读舒适度 */
     .article-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: #fff;
-        padding: 3rem;
-        border-radius: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 3rem;
+      border-radius: 16px;
     }
     
     .article-header {
-        border-bottom: 1px solid #f0f0f0;
-        margin-bottom: 2.5rem;
-        padding-bottom: 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
     }
-
+    
     .article-title {
-        font-weight: 700;
-        font-size: 2.5rem;
-        color: #1a1a1a;
-        line-height: 1.3;
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: #1a1a1a;
+      line-height: 1.3;
     }
-
+    
     /* Markdown 内容样式微调 */
     .article-content {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #333;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
     }
-    .article-content h2, .article-content h3 {
-        margin-top: 2rem;
-        font-weight: 700;
+    .article-content h2,
+    .article-content h3 {
+      margin-top: 2rem;
+      font-weight: 700;
     }
     .article-content p {
-        margin-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
     }
-
+    
     /* 图片画廊样式 */
     .image-gallery {
-        margin-top: 4rem;
-        padding-top: 2rem;
-        border-top: 2px solid #f8f9fa;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 2px solid #f8f9fa;
     }
     .gallery-grid {
-        display: grid;
-        gap: 15px;
-        margin-bottom: 2rem;
+      display: grid;
+      gap: 15px;
+      margin-bottom: 2rem;
     }
-
+    
     /* 1张图：单行全宽或半宽（根据你喜好，这里设为全宽） */
-    .grid-1 { grid-template-columns: 1fr; }
-
+    .grid-1 {
+      grid-template-columns: 1fr;
+    }
+    
     /* 2张图 & 4张图：两列排布 (4张会自动折行形成2*2) */
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
     /* 3, 5, 6, 7, 8, 9张图：三列排布 */
     /* 5张会自动形成第一排3张，第二排2张 */
     /* 6张会自动形成2*3 */
     /* 9张会自动形成3*3 */
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
     /* 优化图片高度：让 4/3 比例在不同格子里都和谐 */
     .gallery-img {
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-        display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      display: block;
     }
-
+    
     /* 针对只有一张图时的特殊处理，防止图片过大 */
     .grid-1 .gallery-img {
-        max-height: 500px;
-        aspect-ratio: auto; /* 单图保持原比例更好看 */
+      max-height: 500px;
+      aspect-ratio: auto; /* 单图保持原比例更好看 */
     }
     .gallery-item {
-        position: relative;
-        border-radius: 10px;
-        overflow: hidden;
-        cursor: zoom-in;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: zoom-in;
     }
     .gallery-img {
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        object-fit: cover;
-        transition: transform 0.3s ease;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      transition: transform 0.3s ease;
     }
     .gallery-item:hover .gallery-img {
-        transform: scale(1.05);
+      transform: scale(1.05);
     }
     .gallery-caption {
-        font-size: 0.85rem;
-        color: #666;
-        margin-top: 0.5rem;
-        text-align: center;
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.5rem;
+      text-align: center;
     }
     /* 极致简约的交互效果 */
     .hover-dark {
-        transition: color 0.2s ease;
+      transition: color 0.2s ease;
     }
     .hover-dark:hover {
-        color: #1a1a1a !important;
+      color: #1a1a1a !important;
     }
     .cursor-pointer {
-        cursor: pointer;
+      cursor: pointer;
     }
     /* 甚至可以把顶部的 border-top 调淡一点 */
     footer.mt-5 {
-        border-top: 1px solid #f1f1f1 !important;
+      border-top: 1px solid #f1f1f1 !important;
     }
-</style>
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
     <article class="article-container shadow-sm">
-        <header class="article-header">
-            <nav aria-label="breadcrumb" class="mb-3">
-                <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="{% url 'blog:list' %}" class="text-decoration-none text-muted">博客列表</a></li>
-                    <li class="breadcrumb-item active text-dark">正文</li>
-                </ol>
-            </nav>
-            <h1 class="article-title mb-3">{{ post.title }}</h1>
-            <div class="d-flex align-items-center text-muted small">
-                <span class="me-3"><i class="bi bi-calendar3 me-1"></i> {{ post.created_at|date:"Y-m-d" }}</span>
-            </div>
-        </header>
-
-        <div class="article-content">
-            {{ post.content|safe }}
+      <header class="article-header">
+        <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb small">
+            <li class="breadcrumb-item">
+              <a href="{% url 'blog:list' %}" class="text-decoration-none text-muted">博客列表</a>
+            </li>
+            <li class="breadcrumb-item active text-dark">正文</li>
+          </ol>
+        </nav>
+        <h1 class="article-title mb-3">{{ post.title }}</h1>
+        <div class="d-flex align-items-center text-muted small">
+          <span class="me-3"><i class="bi bi-calendar3 me-1"></i> {{ post.created_at|date:'Y-m-d' }}</span>
         </div>
+      </header>
 
-        <div class="mt-5 pt-5 border-top-0 d-flex justify-content-between align-items-center">
-            <a href="{% url 'blog:list' %}" class="text-secondary text-decoration-none small hover-dark">
-                <i class="bi bi-chevron-left"></i> 返回博文列表
-            </a>
+      <div class="article-content">{{ post.content|safe }}</div>
 
-            <div class="d-flex gap-3 align-items-center">
-                <i class="bi bi-link-45deg text-muted fs-5 cursor-pointer hover-dark"
-                   title="Copy Link"
-                   onclick="copyToClipboard()">复制链接</i>
-            </div>
+      <div class="mt-5 pt-5 border-top-0 d-flex justify-content-between align-items-center">
+        <a href="{% url 'blog:list' %}" class="text-secondary text-decoration-none small hover-dark"><i class="bi bi-chevron-left"></i> 返回博文列表</a>
+
+        <div class="d-flex gap-3 align-items-center">
+          <a href="{% url 'blog:download_pdf' post.id %}" style="text-decoration: none; color: inherit;"><i class="bi bi-link-45deg text-muted fs-5 cursor-pointer hover-dark">下载pdf</i></a>
         </div>
+      </div>
     </article>
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    function copyToClipboard() {
-        navigator.clipboard.writeText(window.location.href);
-        alert('链接已复制');
-    }
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async onerror="onMathJaxError()"></script>
 
-<script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']], // 行内公式：$公式$
-            displayMath: [['$$', '$$'], ['\\[', '\\]']], // 独立行公式：$$公式$$
-            processEscapes: true,
-            processEnvironments: true
-        },
-        options: {
-            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
-        }
-    };
-</script>
-
-<script
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    id="MathJax-script"
-    async
-    onerror="onMathJaxError()"
->
-</script>
-
-<script>
+  <script>
     function onMathJaxError() {
-        console.warn("CDN MathJax 加载失败，正在切换至本地资源...");
-        const script = document.createElement('script');
-        script.src = '{% static 'js/mathjax.js' %}';
-        document.head.appendChild(script);
+      console.warn('CDN MathJax 加载失败，正在切换至本地资源...')
+      const script = document.createElement('script')
+      script.src = '{% static "js/mathjax.js" %}'
+      document.head.appendChild(script)
     }
-</script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [
+          ['$', '$'],
+          ['\\(', '\\)']
+        ], // 行内公式：$公式$
+        displayMath: [
+          ['$$', '$$'],
+          ['\\[', '\\]']
+        ], // 独立行公式：$$公式$$
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    }
+  </script>
 {% endblock %}

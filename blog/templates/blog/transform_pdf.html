@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/github-markdown-dark.css' %}" />
+    <style>
+      /* 基础页面设置 */
+      @page {
+        size: A4;
+        margin: 2cm;
+      }
+      
+      /* 中文字体：极其重要，否则公式和中文都是方框 */
+      body {
+        font-family: 'Source Han Sans SC', 'SimSun', serif;
+      }
+      
+      /* 针对 python-markdown-math 生成的公式样式 */
+      .math {
+        font-family: 'Latin Modern Math', serif; /* 如果服务器有数学字体更好 */
+      }
+      
+      /* 模拟行间公式 (块级公式) 的居中效果 */
+      div.math {
+        text-align: center;
+        margin: 1rem 0;
+        display: block;
+      }
+      body {
+        font-family: 'Source Han Sans SC', serif;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      /* 确保公式不会因为太长而被截断 */
+      .katex-display {
+        overflow-x: visible;
+        overflow-y: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="article-title mb-3">{{ post.title }}</h1>
+    <div class="d-flex align-items-center text-muted small">
+      <span class="me-3"><i class="bi bi-calendar3 me-1"></i> {{ post.created_at|date:'Y-m-d' }}</span>
+    </div>
+
+    <div class="article-content">{{ post.content|safe }}</div>
+  </body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async onerror="onMathJaxError()"></script>
+
+<script>
+  function onMathJaxError() {
+    console.warn('CDN MathJax 加载失败，正在切换至本地资源...')
+    const script = document.createElement('script')
+    script.src = '{% static "js/mathjax.js" %}'
+    document.head.appendChild(script)
+  }
+  window.MathJax = {
+    tex: {
+      inlineMath: [
+        ['$', '$'],
+        ['\\(', '\\)']
+      ], // 行内公式：$公式$
+      displayMath: [
+        ['$$', '$$'],
+        ['\\[', '\\]']
+      ], // 独立行公式：$$公式$$
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    },
+    svg: { fontCache: 'global' } // 建议用 SVG 模式，PDF 兼容性更好
+  }
+</script>

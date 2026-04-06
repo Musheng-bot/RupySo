@@ -1,65 +1,89 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}{% if form.instance.pk %}编辑{% else %}发布{% endif %}博文 - RupySo{% endblock %}
+{% block title %}
+  {% if form.instance.pk %}
+    编辑
+  {% else %}
+    发布
+  {% endif %}博文 - RupySo
+{% endblock %}
 
 {% block extra_css %}
-<style>
-    .form-section { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 2.5rem; }
-    .form-label { font-weight: 600; color: #444; font-size: 0.9rem; }
-    
-    /* 让编辑器更像样 *//* 这里的类名是 CKEditor 5 渲染后的标准类名 */
-    .ck-editor__editable_inline {
-        min-height: 450px !important; /* 必须给个高度 */
-        border: 1px solid #ced4da !important;
+  <style>
+    .form-section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      padding: 2.5rem;
     }
-
+    .form-label {
+      font-weight: 600;
+      color: #444;
+      font-size: 0.9rem;
+    }
+    
+    /* 让编辑器更像样 */
+    /这里的类名是 CKEditor 5 渲染后的标准类名 / .ck-editor__editable_inline {
+      min-height: 450px !important; /* 必须给个高度 */
+      border: 1px solid #ced4da !important;
+    }
+    
     /* 确保编辑器容器在页面中是块级显示 */
     .ck.ck-editor {
-        display: block !important;
-        width: 100% !important;
+      display: block !important;
+      width: 100% !important;
     }
-</style>
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="form-section">
-                <h3 class="fw-bold mb-4 text-center">{% if form.instance.pk %}编辑博文{% else %}发布新博文{% endif %}</h3>
+      <div class="col-lg-10">
+        <div class="form-section">
+          <h3 class="fw-bold mb-4 text-center">
+            {% if form.instance.pk %}
+              编辑博文
+            {% else %}
+              发布新博文
+            {% endif %}
+          </h3>
 
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    {# 加载 CKEditor 5 资源 #}
-                    {{ form.media }}
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-                    <div class="mb-4">
-                        <label class="form-label">文章标题</label>
-                        {{ form.title }}
-                        {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
-                    </div>
+            {# 加载 CKEditor 5 资源 #}
+            {{ form.media }}
 
-                    <div class="mb-5">
-                        <label class="form-label">正文内容</label>
-                        {{ form.content }}
-                        {% if form.content.errors %}<div class="text-danger small">{{ form.content.errors }}</div>{% endif %}
-                    </div>
-
-                    <div class="mt-5 d-flex justify-content-between align-items-center">
-                        <div class="form-check form-switch">
-                            {{ form.published }}
-                            <label class="form-check-label ms-2" for="{{ form.published.id_for_label }}">立即发布</label>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'blog:list' %}" class="btn btn-light px-4">取消</a>
-                            <button type="submit" class="btn btn-dark px-5 fw-bold">保存并提交</button>
-                        </div>
-                    </div>
-                </form>
+            <div class="mb-4">
+              <label class="form-label">文章标题</label>
+              {{ form.title }}
+              {% if form.title.errors %}
+                <div class="text-danger small">{{ form.title.errors }}</div>
+              {% endif %}
             </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
 
+            <div class="mb-5">
+              <label class="form-label">正文内容</label>
+              {{ form.content }}
+              {% if form.content.errors %}
+                <div class="text-danger small">{{ form.content.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mt-5 d-flex justify-content-between align-items-center">
+              <div class="form-check form-switch">
+                {{ form.published }}
+                <label class="form-check-label ms-2" for="{{ form.published.id_for_label }}">立即发布</label>
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{% url 'blog:list' %}" class="btn btn-light px-4">取消</a>
+                <button type="submit" class="btn btn-dark px-5 fw-bold">保存并提交</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
