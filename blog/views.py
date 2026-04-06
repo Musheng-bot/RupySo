@@ -11,9 +11,7 @@ from django.utils.text import slugify
 from blog.forms import PostForm
 from blog.models import Post
 
-import md2pdf
-import markdown
-from weasyprint import HTML
+from playwright.sync_api import sync_playwright
 
 class PostCreateView(UserPassesTestMixin, CreateView):
     model = Post
@@ -56,8 +54,6 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
     pk_url_kwarg = 'post_id'
-    
-from playwright.sync_api import sync_playwright
 
 def download_pdf(request, post_id: int):
     post = get_object_or_404(Post, id=post_id)
