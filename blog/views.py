@@ -61,7 +61,15 @@ def download_pdf(request, post_id: int):
 
     with sync_playwright() as p:
         # 建议开启 chromium，它是兼容性最好的
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--headless=new"
+            ]
+        )
         page = browser.new_page()
 
         # 1. 设置内容，并等待网络活动停止
